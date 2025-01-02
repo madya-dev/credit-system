@@ -65,8 +65,8 @@ class CreditResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bill_amt')
                     ->label("Tagihan")
-                    ->prefix('Rp')
-                    ->money('IDR')
+                    ->prefix('NT$')
+                    ->money('TWD')
                     ->numeric(
                         thousandsSeparator: '.',
                         decimalSeparator: ',',
@@ -77,9 +77,7 @@ class CreditResource extends Resource
                 Tables\Columns\BadgeColumn::make('default_payments')
                     ->label('Risiko Terlambat Bayar')
                     ->getStateUsing(function ($record) {
-                        $billDateMonth = $record->bill_date->format('m');
-                        $defaultPayment = $record->client->defaultPayment()->whereMonth('created_at', $billDateMonth)->first();
-
+                        $defaultPayment = $record->predict;
                         if ($defaultPayment && $defaultPayment->default_payment_next_month) {
                             return 'Terlambat';
                         } elseif ($defaultPayment && !$defaultPayment->default_payment_next_month) {
@@ -96,7 +94,7 @@ class CreditResource extends Resource
                 BadgeColumn::make('payments.payment_status')
                     ->label('Status Pembayaran')
                     ->default("Belum Bayar")
-                    ->getStateUsing(fn($record) => $record->payments->first()?->payment_status)
+                    ->getStateUsing(fn($record) => $record->payments?->payment_status)
                     ->formatStateUsing(fn($state) => match ($state) {
                         'completed' => 'Sudah Bayar',
                         default => 'Belum Bayar',
