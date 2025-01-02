@@ -8,6 +8,7 @@ use Filament\Support\Colors\Color;
 use App\Models\DefaultPayment;
 use Carbon\Carbon;
 use Carbon\Month;
+use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Http;
 
@@ -68,26 +69,39 @@ class CheckRisikoCreditAction extends Action
             "PAY_AMT6" => $data[5]->payments ? $data[5]->payments->amount_paid : 0
           ];
 
-          $response = Http::post("47.129.186.50:8000/predict", $history);
-          $resJSON = $response->json();
+          $response = null;
+          $resJSON = null;
 
-          $d = [
-            'client_id' => $record->client_id,
-            'statement_id' => $record->id,
-            'default_payment_next_month' => $resJSON['isLate'], // Set initial status
-            'created_at' => now(),
-          ];
-          // dd($d);
-          // Create new default payment record
-          $res = DefaultPayment::create($d);
+          try {
+            $response = Http::post("47.129.186.50:8000/predict", $history);
+            $resJSON = $response->json();
 
-          // dd($res);
+            $d = [
+              'client_id' => $record->client_id,
+              'statement_id' => $record->id,
+              'default_payment_next_month' => $resJSON['isLate'], // Use predicted value if available, otherwise default
+              'created_at' => now(),
+            ];
+            // dd($d);
+            // Create new default payment record
+            $res = DefaultPayment::create($d);
 
-          // Show success notification
-          Notification::make()
-            ->title('Pengecekan risiko selesai')
-            ->success()
-            ->send();
+            // dd($res);
+
+            // Show success notification
+            Notification::make()
+              ->title('Pengecekan risiko selesai')
+              ->success()
+              ->send();
+          } catch (Exception $e) {
+            // Handle connection error here
+            print("Error: Prediction failed - " . $e->getMessage());
+            // Show info notification that check was already done
+            Notification::make()
+              ->title('Risiko fail to check for this statement')
+              ->danger()
+              ->send();
+          }
         } else {
           // Show info notification that check was already done
           Notification::make()
