@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CreditResource\Actions;
 
 use Filament\Tables\Actions\Action;
 use App\Models\Payment;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 
@@ -22,6 +23,7 @@ class PaymentAction extends Action
           ->required()
           ->minValue(0)
           ->placeholder('Masukan Jumlah Bayar'),
+        DatePicker::make('payment_date')
       ])
       ->modalHeading('Bayar')
       ->modalSubmitActionLabel('Konfirmasi')
@@ -29,7 +31,6 @@ class PaymentAction extends Action
         $record->update([
           'pay_amt' => $record->pay_amt + $data['payment_amount']
         ]);
-
         $payment = $record->payments()->where('statement_id', $record->id)->first();
         if ($payment) {
           $payment['amount_paid'] = $payment->amount_paid + $data['payment_amount'];
@@ -39,7 +40,7 @@ class PaymentAction extends Action
             'client_id' => $record->client_id,
             'statement_id' => $record->id,
             'amount_paid' => $data['payment_amount'],
-            'payment_date' => now(),
+            'payment_date' => $data['payment_date'],
             'payment_status' => 'completed'
           ]);
         }

@@ -27,6 +27,10 @@ class CreditCardStatement extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'statement_id');
+        return $this->hasOne(Payment::class, 'statement_id');
+    }
+    public function predict()
+    {
+        return $this->hasOne(DefaultPayment::class, 'statement_id');
     }
 }

@@ -71,8 +71,8 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('marriage.name'),
                 Tables\Columns\TextColumn::make('age'),
                 Tables\Columns\TextColumn::make('limit_bal')
-                    ->prefix('Rp')
-                    ->money('IDR')
+                    ->prefix('NT$')
+                    ->money('TWD')
                     ->numeric(
                         thousandsSeparator: '.',
                         decimalSeparator: ',',

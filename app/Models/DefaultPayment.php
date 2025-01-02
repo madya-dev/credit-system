@@ -11,7 +11,8 @@ class DefaultPayment extends Model
 
     protected $fillable = [
         'client_id',
-        'default_payment_next_month'
+        'default_payment_next_month',
+        'statement_id'
     ];
 
     protected $casts = [
@@ -21,5 +22,9 @@ class DefaultPayment extends Model
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+    public function statement()
+    {
+        return $this->belongsTo(CreditCardStatement::class);
     }
 }
