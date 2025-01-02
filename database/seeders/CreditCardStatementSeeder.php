@@ -17,7 +17,7 @@ class CreditCardStatementSeeder extends Seeder
     {
         $creditData = [
             [
-                'client_id' => 11, // Nasabah tepat waktu
+                'client_id' => 1, // Nasabah tepat waktu
                 'limit_bal' => 120000,
                 'statements' => [
                     ['bill_amt' => 25325, 'pay_amt' => 2500, 'bill_date' => now()->subMonths(5), 'payment_delay' => -2], // 2 hari sebelum jatuh tempo
