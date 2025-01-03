@@ -73,7 +73,7 @@ class CheckRisikoCreditAction extends Action
           $resJSON = null;
 
           try {
-            $response = Http::post("47.129.186.50:8000/predict", $history);
+            $response = Http::post("13.215.194.217:35000/predict", $history);
             $resJSON = $response->json();
 
             $d = [
